@@ -10,13 +10,45 @@
     mkdir /mnt/calibre_library
     chown calibre:calibre /mnt/calibre_library
 
+## Add Calibre user to sudoers
+##
+
+echo 'calibre   ALL=(ALL)NOPASSWD:/opt/calibre/*' >> /etc/sudoers
+
+## Allow calibre user access to accept SSH using public key
+##
+
+    chmod 600 /root/.ssh/
+    chmod 700 /root/.ssh/authorized_keys
+
+    mkdir /home/calibre/.ssh/
+
+    cat /root/.ssh/authorized_keys >> /home/calibre/.ssh/authorized_keys
+    chmod 700 /home/calibre/.ssh
+    chmod 600 /home/calibre/.ssh/authorized_keys
+
+    chown -R calibre:calibre /home/calibre/.ssh/
+
+## Disallow passwords over SSH
+## Force only public key auth
+## 
+
+    sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+
+## Disable root login over SSH
+##
+## sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+
+    systemctl restart sshd.service
+
 ## Add and mount NFS mount
+## Location of your calibre library .db file
 ##
     echo 'nas.domain.com:/NAS/ebooks/calibre_library  /mnt/calibre_library    nfs     rw,sync' >> /etc/fstab
     mount -a
 ## Add firewall entries
-##
-    sourceIP='192.168.0.0/24'
+## You may wish to add/adjust more entries
+    sourceIP='192.168.1.0/24'
     firewall-cmd --zone=public --add-port=8081/tcp
     firewall-cmd --zone=public --add-source=$sourceIP
     firewall-cmd --runtime-to-permanent
@@ -52,7 +84,8 @@ WantedBy=multi-user.target
 ## Enable calibre-server.service to launch on reboot
 ##
 
-setenforce 0
-systemctl enable calibre-server.service
+    systemctl enable calibre-server.service
 
-reboot
+## Restart
+##
+    reboot
