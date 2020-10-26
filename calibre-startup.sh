@@ -52,6 +52,7 @@ WantedBy=multi-user.target
 ## Enable calibre-server.service to launch on reboot
 ##
 
+setenforce 0
 systemctl enable calibre-server.service
 
 reboot
