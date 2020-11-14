@@ -55,6 +55,7 @@ installations='httpd tcpdump vim'
 ##
     mkdir -p ${userhomepath}'/.ssh/'
     cat /root/.ssh/authorized_keys >> ${userhomepath}'/.ssh/authorized_keys'
+    chown -R ${username}:${username} ${userhomepath}'/.ssh'
     chmod 700 ${userhomepath}'/.ssh'
     chmod 600 ${userhomepath}'/.ssh/authorized_keys'
 
